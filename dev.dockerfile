@@ -41,19 +41,21 @@ RUN apt-get update \
 # RUN echo "expose_php=0" > $PHP_INI_DIR/conf.d/path-info.ini
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-ADD . /var/www/html
-WORKDIR /var/www/html
+# ADD . /var/www/html
+# WORKDIR /var/www/html
 
-RUN touch storage/logs/laravel.log
+# RUN touch storage/logs/laravel.log
 
-RUN composer install
-RUN php artisan cache:clear && \
-    php artisan view:clear && \
-    php artisan route:cache
+# RUN composer install
+# RUN php artisan cache:clear && \
+#     php artisan view:clear && \
+#     php artisan route:cache
 
-RUN chmod -R 777 /var/www/html/storage
+# RUN chmod -R 777 /var/www/html/storage
+
+# RUN touch /var/log/cron.log
 
 # ADD deploy/cron/artisan-schedule-run /etc/cron.d/artisan-schedule-run
 # RUN chmod 0644 /etc/cron.d/artisan-schedule-run

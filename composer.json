@@ -45,6 +45,13 @@
     }
   },
   "scripts": {
+    "prod": "docker-compose",
+    "prod:up": "docker-compose up -d",
+    "prod:down": "docker-compose down",
+    "dev:up": "docker-compose -f docker-compose.dev.yml up -d",
+    "dev:down": "docker-compose -f docker-compose.dev.yml down",
+    "dev": "docker-compose -f docker-compose.dev.yml",
+    
     "post-root-package-install": [
       "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
     ],

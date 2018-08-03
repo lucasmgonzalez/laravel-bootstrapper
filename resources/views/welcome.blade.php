@@ -79,7 +79,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel - {{\App\User::first()->email ?? "No user"}}
+                    Laravel
                 </div>
 
                 <div class="links">
