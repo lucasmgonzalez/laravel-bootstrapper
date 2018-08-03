@@ -1,0 +1,109 @@
+version: "3.1"
+
+networks:
+    network:
+        driver: bridge
+
+services:
+  # # PHP-PM Config
+  # ppm: 
+  #   image: phppm/nginx
+  #   command: --static-directory=public/ --app-env=debug --bootstrap=laravel
+  #   volumes: 
+  #     - ./:/var/www
+  #   ports:
+  #     - "80:80"
+  #   environment:
+  #     - "DB_PORT=3306"
+  #     - "DB_HOST=database"
+  #     - "REDIS_HOST=redis"
+  #     - "CACHE_DRIVER=redis"
+  #     - "SESSION_DRIVER=redis"
+  #     - "QUEUE_DRIVER=redis"
+  #   networks:
+  #     - network
+  
+  # App Config
+  app:
+    build:
+      context: ./
+      dockerfile: app.dockerfile
+    links:
+      - database
+      - redis
+      # - elasticsearch
+    env_file:
+      - ./deploy/docker-compose.env
+    networks:
+      - network
+  
+  # Nginx Config
+  web: 
+    build:
+      context: ./
+      dockerfile: server.dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - app
+    networks:
+      - network
+  
+  # Database Config
+  database: 
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      - "MYSQL_DATABASE=homestead"
+      - "MYSQL_USER=homestead"
+      - "MYSQL_PASSWORD=secret"
+      - "MYSQL_ROOT_PASSWORD=secret"
+    ports:
+      - "33061:3306"
+    networks:
+      - network
+    env_file:
+      - ./deploy/docker-compose.env
+  
+  # Redis Config
+  redis:
+    image: redis
+    networks:
+      - network
+  
+  # # Elasticsearch Config
+  # elasticsearch:
+  #   image: elasticsearch:latest
+  #   networks:
+  #     - network
+
+  # Cron Config
+  # cron:
+  #   build:
+  #     context: ./
+  #     dockerfile: app.dockerfile
+  #   command: ["/bin/sh", "-c", "env /bin/bash -o posix -c 'export -p' > /etc/cron.d/project_env.sh && chmod +x /etc/cron.d/project_env.sh && crontab /etc/cron.d/artisan-schedule-run && cron && tail -f /var/log/cron.log"]
+  #   env_file:
+  #     - ./deploy/docker-compose.env
+  #   networks:
+  #       - network
+
+  # Worker Config
+  # worker:
+  #   depends_on:
+  #     - redis
+  #   build:
+  #     context: ./
+  #     dockerfile: app.dockerfile
+  #   command: ["php", "artisan", "queue:work"]
+  #   networks:
+  #     - network
+  #   env_file:
+  #     - ./deploy/docker-compose.env
+
+volumes:
+  dbdata:
+    driver: local
